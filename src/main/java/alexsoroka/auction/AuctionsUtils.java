@@ -1,5 +1,6 @@
-package auction;
+package alexsoroka.auction;
 
+import alexsoroka.bots.Bidder;
 import lombok.val;
 
 import java.util.HashMap;

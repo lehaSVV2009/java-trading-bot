@@ -1,6 +1,6 @@
-package bots;
+package alexsoroka.bots;
 
-import auction.Bidder;
+import alexsoroka.util.Assert;
 
 import java.util.Random;
 
@@ -23,12 +23,9 @@ public class RandomBidder implements Bidder {
    */
   @Override
   public void init(int quantity, int cash) {
-    if (quantity < 0) {
-      throw new IllegalArgumentException("Quantity must be a positive number");
-    }
-    if (cash < 0) {
-      throw new IllegalArgumentException("Cash must be a positive number");
-    }
+    Assert.isTrue(quantity >= 0, "Quantity must be a positive number");
+    Assert.isTrue(cash >= 0, "Cash must be a positive number");
+
     this.cash = cash;
   }
 
@@ -51,12 +48,9 @@ public class RandomBidder implements Bidder {
    */
   @Override
   public void bids(int own, int other) {
-    if (own < 0) {
-      throw new IllegalArgumentException("Own bid must be a positive number");
-    }
-    if (other < 0) {
-      throw new IllegalArgumentException("Other bid must be a positive number");
-    }
+    Assert.isTrue(own >= 0, "Own bid must be a positive number");
+    Assert.isTrue(other >= 0, "Other bid must be a positive number");
+
     this.cash -= own;
   }
 }

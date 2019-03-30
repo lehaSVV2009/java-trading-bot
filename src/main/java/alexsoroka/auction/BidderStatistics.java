@@ -1,4 +1,4 @@
-package auction;
+package alexsoroka.auction;
 
 import lombok.Getter;
 

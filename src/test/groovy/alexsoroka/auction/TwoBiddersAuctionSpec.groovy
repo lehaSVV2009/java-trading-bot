@@ -1,6 +1,7 @@
-package auction
+package alexsoroka.auction
 
-import bots.RandomBidder
+import alexsoroka.bots.Bidder
+import alexsoroka.bots.RandomBidder
 import spock.lang.Specification
 
 class TwoBiddersAuctionSpec extends Specification {

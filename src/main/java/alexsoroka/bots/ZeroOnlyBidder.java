@@ -1,11 +1,9 @@
-package bots;
-
-import auction.Bidder;
+package alexsoroka.bots;
 
 /**
  * Bidder with always 0 bids.
  */
-public class AlwaysZeroBidder implements Bidder {
+public class ZeroOnlyBidder implements Bidder {
 
   /**
    * Initializes the bidder with the production quantity and the allowed cash limit.

@@ -1,4 +1,4 @@
-package bots
+package alexsoroka.bots
 
 import spock.lang.Specification
 import spock.lang.Unroll

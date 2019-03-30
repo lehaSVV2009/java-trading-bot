@@ -1,14 +1,14 @@
-package bots
+package alexsoroka.bots
 
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class AlwaysZeroBidderSpec extends Specification {
+class ZeroOnlyBidderSpec extends Specification {
 
   @Unroll
   def 'placeBid should return 0 when cash=#cash and quantity=#quantity'() {
     given:
-    def bidder = new AlwaysZeroBidder()
+    def bidder = new ZeroOnlyBidder()
     bidder.init(quantity, cash)
 
     when:

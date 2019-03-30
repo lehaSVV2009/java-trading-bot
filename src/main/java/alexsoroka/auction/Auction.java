@@ -1,4 +1,6 @@
-package auction;
+package alexsoroka.auction;
+
+import alexsoroka.bots.Bidder;
 
 import java.util.Map;
 

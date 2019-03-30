@@ -1,6 +1,8 @@
-package auction;
+package alexsoroka.auction;
 
+import alexsoroka.bots.Bidder;
 import lombok.val;
+import alexsoroka.util.Assert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,36 +20,28 @@ public class TwoBiddersAuction implements Auction {
   private final WinFunction winFunction;
 
   public TwoBiddersAuction(int initialProductsQuantity, WinFunction winFunction) {
-    if (initialProductsQuantity < 0) {
-      throw new IllegalArgumentException("Products quantity must be positive");
-    }
-    if (initialProductsQuantity % 2 == 1) {
-      throw new IllegalArgumentException("Products quantity must be even");
-    }
-    if (winFunction == null) {
-      throw new IllegalArgumentException("Win function can not be null");
-    }
+    Assert.isTrue(initialProductsQuantity >= 0, "Products quantity must be positive");
+    Assert.isTrue(initialProductsQuantity % 2 == 0, "Products quantity must be even");
+    Assert.nonNull(winFunction, "Win function can not be null");
+
     this.initialProductsQuantity = initialProductsQuantity;
     this.winFunction = winFunction;
   }
 
   @Override
   public void register(Bidder bidder, int cash) {
-    if (bidder == null) {
-      throw new IllegalArgumentException("Bidder must not be null");
-    }
-    if (this.bidders.size() > 2) {
-      throw new IllegalStateException("Maximum bidders count is 2");
-    }
+    Assert.nonNull(bidder, "Bidder must not be null");
+    Assert.state(this.bidders.size() <= 2, "Maximum bidders count is 2");
+
     bidder.init(initialProductsQuantity, cash);
     this.bidders.add(bidder);
   }
 
   @Override
   public Map<Bidder, Integer> run() {
-    if (this.bidders.size() < 2) {
-      throw new IllegalStateException("Bidders count must be 2 for the bet");
-    }
+    // TODO simplify
+    // TODO add logging
+    Assert.state(this.bidders.size() == 2, "Bidders count must be 2 for the bet");
 
     Map<Bidder, Integer> statistics = new HashMap<>();
     val firstBidder = bidders.get(0);
@@ -56,11 +50,13 @@ public class TwoBiddersAuction implements Auction {
     statistics.put(secondBidder, 0);
 
     IntStream.range(0, initialProductsQuantity / 2).forEach(index -> {
-      WinFunction.BidResult bidResult = winFunction.apply(
-          firstBidder.placeBid(),
-          secondBidder.placeBid()
-      );
+      int firstBid = firstBidder.placeBid();
+      int secondBid = secondBidder.placeBid();
 
+      firstBidder.bids(firstBid, secondBid);
+      secondBidder.bids(secondBid, firstBid);
+
+      WinFunction.BidResult bidResult = winFunction.apply(firstBid, secondBid);
       switch (bidResult) {
         case PLAYER_1_WIN: {
           statistics.put(firstBidder, statistics.get(firstBidder) + 2);

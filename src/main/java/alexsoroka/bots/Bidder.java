@@ -1,4 +1,4 @@
-package auction;
+package alexsoroka.bots;
 
 /**
  * Represents a bidder for the action.
