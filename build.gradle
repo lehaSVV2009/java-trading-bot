@@ -21,6 +21,9 @@ dependencies {
 	// Reduces java boilerplate code
 	implementation 'org.projectlombok:lombok:1.18.6'
 	annotationProcessor 'org.projectlombok:lombok:1.18.6'
+	// Logger
+	implementation 'org.slf4j:slf4j-api:1.7.26'
+	implementation 'ch.qos.logback:logback-classic:1.2.3'
 	// Groovy language for Spock test framework
 	testImplementation 'org.codehaus.groovy:groovy-all:2.5.6'
 	// Testing and specification framework

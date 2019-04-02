@@ -3,12 +3,12 @@ package alexsoroka.bots
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class PlusOneBidderSpec extends Specification {
+class OpponentPlusOneBidderSpec extends Specification {
 
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new PlusOneBidder().init(quantity, cash)
+    new OpponentPlusOneBidder().init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,7 +23,7 @@ class PlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new PlusOneBidder()
+    def bidder = new OpponentPlusOneBidder()
     bidder.init(0, cash)
 
     when:
@@ -44,7 +44,7 @@ class PlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when lastOpponentBid=#lastOpponentBid and cash=#cash'() {
     given:
-    def bidder = new PlusOneBidder()
+    def bidder = new OpponentPlusOneBidder()
     bidder.init(0, cash)
     bidder.bids(0, lastOpponentBid)
 

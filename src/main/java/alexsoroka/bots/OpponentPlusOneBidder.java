@@ -5,23 +5,19 @@ import alexsoroka.util.Assert;
 /**
  * Bidder with random bids.
  */
-public class PlusOneBidder implements Bidder {
+public class OpponentPlusOneBidder implements Bidder {
 
   /**
-   * Current value of bidder money
+   * Current value of bidder money. 0 by default.
    */
   private int cash;
 
   /**
-   * Last opponent's bid
+   * Last other's bid. 0 by default.
    */
   private int lastOpponentBid;
 
   /**
-   * Initializes the bidder with the production quantity and the allowed cash limit.
-   *
-   * @param quantity the quantity
-   * @param cash     the cash limit
    * @throws IllegalArgumentException if quantity or cash are negative numbers
    */
   @Override
@@ -33,8 +29,6 @@ public class PlusOneBidder implements Bidder {
   }
 
   /**
-   * Retrieves the next bid for the product, which may be zero.
-   *
    * @return the next bid that it is the same as previous opponent's bid plus one
    */
   @Override
@@ -44,10 +38,6 @@ public class PlusOneBidder implements Bidder {
   }
 
   /**
-   * Shows the bids of the two bidders.
-   *
-   * @param own   the bid of this bidder
-   * @param other the bid of the other bidder
    * @throws IllegalArgumentException if own or other are negative numbers
    */
   @Override

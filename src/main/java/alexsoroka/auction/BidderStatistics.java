@@ -1,8 +1,10 @@
 package alexsoroka.auction;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class BidderStatistics {
   private int victories = 0;
   private int losses = 0;

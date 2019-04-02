@@ -15,10 +15,6 @@ public class RandomBidder implements Bidder {
   private int cash;
 
   /**
-   * Initializes the bidder with the production quantity and the allowed cash limit.
-   *
-   * @param quantity the quantity
-   * @param cash     the cash limit
    * @throws IllegalArgumentException if quantity or cash are negative numbers
    */
   @Override
@@ -30,8 +26,6 @@ public class RandomBidder implements Bidder {
   }
 
   /**
-   * Randomly retrieves the next bid for the product, which may be zero.
-   *
    * @return the next random bid
    */
   @Override
@@ -40,10 +34,6 @@ public class RandomBidder implements Bidder {
   }
 
   /**
-   * Shows the bids of the two bidders.
-   *
-   * @param own   the bid of this bidder
-   * @param other the bid of the other bidder
    * @throws IllegalArgumentException if own or other are negative numbers
    */
   @Override

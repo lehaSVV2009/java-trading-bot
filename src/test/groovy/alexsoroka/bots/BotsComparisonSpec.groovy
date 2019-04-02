@@ -1,6 +1,6 @@
 package alexsoroka.bots
 
-import static alexsoroka.auction.AuctionsUtils.runTwoBiddersAuctions
+import static alexsoroka.auction.AuctionsRunner.runTwoBiddersAuctions
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -35,7 +35,7 @@ class BotsComparisonSpec extends Specification {
   @Unroll
   def 'plusOne bot should win zero bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
     given:
-    def plusOneBidder = new PlusOneBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
     def zeroOnlyBidder = new ZeroOnlyBidder()
 
     when:
@@ -60,7 +60,7 @@ class BotsComparisonSpec extends Specification {
   @Unroll
   def 'plusOne bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
     given:
-    def plusOneBidder = new PlusOneBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
     def randomBidder = new RandomBidder()
 
     when:
