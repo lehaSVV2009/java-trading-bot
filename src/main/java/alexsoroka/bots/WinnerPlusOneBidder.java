@@ -1,16 +1,22 @@
 package alexsoroka.bots;
 
+import alexsoroka.auction.WinFunctions;
 import alexsoroka.util.Assert;
 
 /**
- * Bidder with bids that depend on previous opponent bid.
+ * Bidder with bids that depend on previous winner's bid.
  */
-public class OpponentPlusOneBidder implements Bidder {
+public class WinnerPlusOneBidder implements Bidder {
 
   /**
    * Current value of bidder money. 0 by default.
    */
   private int cash;
+
+  /**
+   * Last own's bid. 0 by default.
+   */
+  private int lastOwnBid;
 
   /**
    * Last other's bid. 0 by default.
@@ -26,15 +32,17 @@ public class OpponentPlusOneBidder implements Bidder {
     Assert.isTrue(cash >= 0, "Cash must be a positive number");
 
     this.cash = cash;
+    this.lastOwnBid = 0;
     this.lastOpponentBid = 0;
   }
 
   /**
-   * @return the next bid that it is the same as previous opponent's bid plus one
+   * @return the next bid that it is the same as previous winner's bid plus one
    */
   @Override
   public int placeBid() {
-    int nextValue = lastOpponentBid + 1;
+    int previousWinnerBid = WinFunctions.findWinnerBid(lastOpponentBid, lastOwnBid);
+    int nextValue = previousWinnerBid + 1;
     return nextValue <= cash ? nextValue : 0;
   }
 
@@ -47,6 +55,7 @@ public class OpponentPlusOneBidder implements Bidder {
     Assert.isTrue(other >= 0, "Other bid must be a positive number");
 
     this.cash -= own;
+    this.lastOwnBid = own;
     this.lastOpponentBid = other;
   }
 }

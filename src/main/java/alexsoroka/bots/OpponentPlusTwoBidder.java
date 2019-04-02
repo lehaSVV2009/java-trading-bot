@@ -5,7 +5,7 @@ import alexsoroka.util.Assert;
 /**
  * Bidder with bids that depend on previous opponent bid.
  */
-public class OpponentPlusOneBidder implements Bidder {
+public class OpponentPlusTwoBidder implements Bidder {
 
   /**
    * Current value of bidder money. 0 by default.
@@ -30,11 +30,11 @@ public class OpponentPlusOneBidder implements Bidder {
   }
 
   /**
-   * @return the next bid that it is the same as previous opponent's bid plus one
+   * @return the next bid that it is the same as previous opponent's bid plus two
    */
   @Override
   public int placeBid() {
-    int nextValue = lastOpponentBid + 1;
+    int nextValue = lastOpponentBid + 2;
     return nextValue <= cash ? nextValue : 0;
   }
 

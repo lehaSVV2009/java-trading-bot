@@ -3,19 +3,24 @@ package alexsoroka.bots;
 import alexsoroka.util.Assert;
 
 /**
- * Bidder with bids that depend on previous opponent bid.
+ * Bidder with bids that bids average from the history value plus one.
  */
-public class OpponentPlusOneBidder implements Bidder {
+public class AveragePlusOneBidder implements Bidder {
+
+  /**
+   * Sum of all the bids (own and opposite)
+   */
+  private int allBidsSum;
+
+  /**
+   * Number of all the bids
+   */
+  private int allBidsCount;
 
   /**
    * Current value of bidder money. 0 by default.
    */
   private int cash;
-
-  /**
-   * Last other's bid. 0 by default.
-   */
-  private int lastOpponentBid;
 
   /**
    * @throws IllegalArgumentException if quantity or cash are negative numbers
@@ -26,15 +31,17 @@ public class OpponentPlusOneBidder implements Bidder {
     Assert.isTrue(cash >= 0, "Cash must be a positive number");
 
     this.cash = cash;
-    this.lastOpponentBid = 0;
+    this.allBidsSum = 0;
+    this.allBidsCount = 0;
   }
 
   /**
-   * @return the next bid that it is the same as previous opponent's bid plus one
+   * @return the average bid from all the bids in the auction
    */
   @Override
   public int placeBid() {
-    int nextValue = lastOpponentBid + 1;
+    double average = ((double) allBidsSum) / allBidsCount;
+    int nextValue = (int) (Math.round(average)) + 1;
     return nextValue <= cash ? nextValue : 0;
   }
 
@@ -47,6 +54,7 @@ public class OpponentPlusOneBidder implements Bidder {
     Assert.isTrue(other >= 0, "Other bid must be a positive number");
 
     this.cash -= own;
-    this.lastOpponentBid = other;
+    this.allBidsSum += (own + other);
+    this.allBidsCount += 2;
   }
 }

@@ -100,7 +100,7 @@ public class AuctionsRunner {
       secondBidder.bids(secondBid, firstBid);
 
       // Calculate statistics
-      BidResult bidResult = findWinner(firstBid, secondBid);
+      BidResult bidResult = findBidResult(firstBid, secondBid);
       switch (bidResult) {
         case PLAYER_1_WIN: {
           statistics.put(firstBidder, statistics.get(firstBidder) + 2);
@@ -139,12 +139,13 @@ public class AuctionsRunner {
     statistics.put(secondBidder, statistics.get(secondBidder).addDraw());
   }
 
-  private static BidResult findWinner(
+  private static BidResult findBidResult(
       Integer playerOneBid,
       Integer playerTwoBid
   ) {
-    return playerOneBid > playerTwoBid ? BidResult.PLAYER_1_WIN
-        : playerOneBid < playerTwoBid ? BidResult.PLAYER_2_WIN
+    int comparison = WinFunctions.compareBids(playerOneBid, playerTwoBid);
+    return comparison > 0 ? BidResult.PLAYER_1_WIN
+        : comparison < 0 ? BidResult.PLAYER_2_WIN
         : BidResult.DRAW;
   }
 }
