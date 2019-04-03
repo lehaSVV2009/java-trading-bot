@@ -1,5 +1,7 @@
 package alexsoroka.auction;
 
+import static alexsoroka.auction.WinFunctions.findBidResult;
+
 import alexsoroka.bots.Bidder;
 import alexsoroka.util.Assert;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +12,7 @@ import java.util.stream.IntStream;
 
 // TODO try to refactor and move to separate files
 @Slf4j
-public class AuctionsRunner {
+public class FirstPriceSealedBidAuctionsRunner {
 
   /**
    * Run n auctions with 2 bidders
@@ -137,15 +139,5 @@ public class AuctionsRunner {
   ) {
     statistics.put(firstBidder, statistics.get(firstBidder).addDraw());
     statistics.put(secondBidder, statistics.get(secondBidder).addDraw());
-  }
-
-  private static BidResult findBidResult(
-      Integer playerOneBid,
-      Integer playerTwoBid
-  ) {
-    int comparison = WinFunctions.compareBids(playerOneBid, playerTwoBid);
-    return comparison > 0 ? BidResult.PLAYER_1_WIN
-        : comparison < 0 ? BidResult.PLAYER_2_WIN
-        : BidResult.DRAW;
   }
 }

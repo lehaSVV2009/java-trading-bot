@@ -3,12 +3,12 @@ package alexsoroka.bots
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class WinnerPlusOneBidderSpec extends Specification {
+class WinnerPlusOneOrTwoBidderSpec extends Specification {
 
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new WinnerPlusOneBidder().init(quantity, cash)
+    new WinnerPlusOneOrTwoBidder().init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,27 +23,28 @@ class WinnerPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new WinnerPlusOneBidder()
+    def bidder = new WinnerPlusOneOrTwoBidder()
     bidder.init(0, cash)
 
     when:
     int result = bidder.placeBid()
 
     then:
-    result == bid
+    result == bid1 || result == bid2
 
     where:
-    cash || bid
-    50   || 1
-    10   || 1
-    1    || 1
-    0    || 0
+    cash || bid1 | bid2
+    50   || 1    | 2
+    10   || 1    | 2
+    2    || 1    | 2
+    1    || 1    | 0
+    0    || 0    | 0
   }
 
   @Unroll
   def 'placeBid should return bid=#bid when lastOwnBid=#lastOwnBid, lastOpponentBid=#lastOpponentBid and cash=#cash'() {
     given:
-    def bidder = new WinnerPlusOneBidder()
+    def bidder = new WinnerPlusOneOrTwoBidder()
     bidder.init(0, cash)
     bidder.bids(lastOwnBid, lastOpponentBid)
 
@@ -51,22 +52,22 @@ class WinnerPlusOneBidderSpec extends Specification {
     int result = bidder.placeBid()
 
     then:
-    result == bid
+    result == bid1 || result == bid2
 
     where:
-    lastOwnBid | lastOpponentBid | cash     || bid
-    0          | 0               | 0        || 0
-    1          | 0               | 1 + 1    || 0
-    0          | 1               | 1        || 0
-    1          | 0               | 2 + 1    || 2
-    0          | 1               | 2        || 2
-    30         | 30              | 100 + 30 || 31
-    31         | 30              | 100 + 31 || 32
-    30         | 31              | 100 + 30 || 32
-    49         | 40              | 50 + 49  || 50
-    40         | 49              | 50 + 40  || 50
-    50         | 40              | 50 + 50  || 0
-    40         | 50              | 50 + 40  || 0
+    lastOwnBid | lastOpponentBid | cash     || bid1 | bid2
+    0          | 0               | 0        || 0    | 0
+    1          | 0               | 1 + 1    || 0    | 0
+    0          | 1               | 1        || 0    | 0
+    1          | 0               | 2 + 1    || 2    | 0
+    0          | 1               | 2        || 2    | 0
+    30         | 30              | 100 + 30 || 31   | 32
+    31         | 30              | 100 + 31 || 32   | 33
+    30         | 31              | 100 + 30 || 32   | 33
+    49         | 40              | 50 + 49  || 50   | 0
+    40         | 49              | 50 + 40  || 50   | 0
+    50         | 40              | 50 + 50  || 0    | 0
+    40         | 50              | 50 + 40  || 0    | 0
   }
 
   @Unroll

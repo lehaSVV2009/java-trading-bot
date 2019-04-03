@@ -3,10 +3,12 @@ package alexsoroka.bots;
 import alexsoroka.auction.WinFunctions;
 import alexsoroka.util.Assert;
 
+import java.util.Random;
+
 /**
  * Bidder with bids that depend on previous winner's bid.
  */
-public class WinnerPlusOneBidder implements Bidder {
+public class WinnerPlusOneOrTwoBidder implements Bidder {
 
   /**
    * Current value of bidder money. 0 by default.
@@ -42,7 +44,7 @@ public class WinnerPlusOneBidder implements Bidder {
   @Override
   public int placeBid() {
     int previousWinnerBid = WinFunctions.findWinnerBid(lastOpponentBid, lastOwnBid);
-    int nextValue = previousWinnerBid + 1;
+    int nextValue = previousWinnerBid + (new Random().nextBoolean() ? 1 : 2);
     return nextValue <= cash ? nextValue : 0;
   }
 

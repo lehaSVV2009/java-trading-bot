@@ -1,6 +1,6 @@
 package alexsoroka.bots
 
-import static alexsoroka.auction.AuctionsRunner.runTwoBiddersAuctions
+import static alexsoroka.auction.FirstPriceSealedBidAuctionsRunner.runTwoBiddersAuctions
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -91,16 +91,16 @@ class BotsComparisonSpec extends Specification {
   }
 
   @Unroll
-  def 'winnerPlusOne bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+  def 'winnerPlusOneOrTwo bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
     given:
-    def winnerPlusOneBidder = new WinnerPlusOneBidder()
+    def winnerPlusOneOrTwoBidder = new WinnerPlusOneOrTwoBidder()
     def randomBidder = new RandomBidder()
 
     when:
-    def statistics = runTwoBiddersAuctions(winnerPlusOneBidder, randomBidder, quantity, cash, iterations)
+    def statistics = runTwoBiddersAuctions(winnerPlusOneOrTwoBidder, randomBidder, quantity, cash, iterations)
 
     then:
-    statistics[winnerPlusOneBidder].victories > statistics[randomBidder].victories
+    statistics[winnerPlusOneOrTwoBidder].victories > statistics[randomBidder].victories
 
     where:
     quantity | cash    | iterations
@@ -165,6 +165,31 @@ class BotsComparisonSpec extends Specification {
     1000000  | 1000000 | 100
   }
 
+  @Unroll
+  def 'winner median bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def winnerMedianBidder = new WinnerMedianPlusOneBidder()
+    def randomBidder = new RandomBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(winnerMedianBidder, randomBidder, quantity, cash, iterations)
+
+    then:
+    statistics[winnerMedianBidder].victories > statistics[randomBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // can loose
+    10       | 1000    | 100 // can loose
+    10       | 1000000 | 100 // can loose
+    1000     | 10      | 100 // can loose
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100 // can loose
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
   //
   // PLUS ONE BOT COMPARISON
   //
@@ -180,6 +205,31 @@ class BotsComparisonSpec extends Specification {
 
     then:
     statistics[plusTwoBidder].victories > statistics[plusOneBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100 // loose
+    1000     | 1000    | 100
+    1000     | 1000000 | 100 // loose
+    1000000  | 10      | 100 // loose
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
+  @Unroll
+  def 'winnerPlusOneOrTwo bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def winnerPlusOneBidder = new WinnerPlusOneOrTwoBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(winnerPlusOneBidder, plusOneBidder, quantity, cash, iterations)
+
+    then:
+    statistics[winnerPlusOneBidder].victories > statistics[plusOneBidder].victories
 
     where:
     quantity | cash    | iterations
@@ -223,6 +273,31 @@ class BotsComparisonSpec extends Specification {
   def 'median bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
     given:
     def medianBidder = new MedianPlusOneBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(medianBidder, plusOneBidder, quantity, cash, iterations)
+
+    then:
+    statistics[medianBidder].victories > statistics[plusOneBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // loose
+    10       | 1000    | 100 // loose
+    10       | 1000000 | 100 // loose
+    1000     | 10      | 100 // loose
+    1000     | 1000    | 100 // loose
+    1000     | 1000000 | 100 // loose
+    1000000  | 10      | 100 // loose
+    1000000  | 1000    | 100 // loose
+    1000000  | 1000000 | 100 // loose
+  }
+
+  @Unroll
+  def 'winner median bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def medianBidder = new WinnerMedianPlusOneBidder()
     def plusOneBidder = new OpponentPlusOneBidder()
 
     when:
