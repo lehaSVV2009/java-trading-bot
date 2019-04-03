@@ -3,12 +3,12 @@ package alexsoroka.bots
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class AveragePlusOneBidderSpec extends Specification {
+class MedianPlusOneBidderSpec extends Specification {
 
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new AveragePlusOneBidder().init(quantity, cash)
+    new MedianPlusOneBidder().init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,7 +23,7 @@ class AveragePlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new AveragePlusOneBidder()
+    def bidder = new MedianPlusOneBidder()
     bidder.init(0, cash)
 
     when:
@@ -40,11 +40,26 @@ class AveragePlusOneBidderSpec extends Specification {
     0    || 0
   }
 
+  def 'placeBid should clear history when bidder is used twice'() {
+    given:
+    def bidder = new MedianPlusOneBidder()
+    bidder.init(2, 100)
+    bidder.bids(1, 2)
+    bidder.init(2, 100)
+    bidder.bids(3, 4)
+
+    when:
+    def bid = bidder.placeBid()
+
+    then:
+    bid == 5
+  }
+
   @Unroll
   def 'placeBid should return bid=#bid when bidsHistory=#bidsHistory and cash=#cash'() {
     given:
-    def bidder = new AveragePlusOneBidder()
-    bidder.init(0, cash)
+    def bidder = new MedianPlusOneBidder()
+    bidder.init(bidsHistory.size() * 2, cash)
     bidsHistory.each {
       bidder.bids(it[0], it[1])
     }
@@ -64,7 +79,7 @@ class AveragePlusOneBidderSpec extends Specification {
     [[100, 100], [100, 100]]       | 1000 || 101
     [[10, 20], [30, 40]]           | 1000 || 26
     [[25, 26], [23, 20], [21, 22]] | 1000 || 24
-    [[10, 10], [10, 10], [10, 60]] | 1000 || 19
+    [[10, 10], [10, 10], [10, 60]] | 1000 || 11
   }
 
   @Unroll

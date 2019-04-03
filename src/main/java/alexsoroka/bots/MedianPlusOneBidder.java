@@ -1,22 +1,21 @@
 package alexsoroka.bots;
 
 import alexsoroka.util.Assert;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
+
+import java.util.Queue;
+
 
 /**
- * Bidder with bids that bids average from the history value plus one.
+ * Bidder with bids that bids median value from the recent history plus one.
  */
-public class AveragePlusOneBidder implements Bidder {
-
-  // It's too slow for performance to store history in List<Integer>
-  /**
-   * Sum of all the bids (own and opposite)
-   */
-  private int allBidsSum;
+public class MedianPlusOneBidder implements Bidder {
 
   /**
-   * Number of all the bids
+   * Recent 100 bids (own and opposite)
    */
-  private int allBidsCount;
+  private Queue<Integer> history = new CircularFifoQueue<>(100);
 
   /**
    * Current value of bidder money. 0 by default.
@@ -32,8 +31,7 @@ public class AveragePlusOneBidder implements Bidder {
     Assert.isTrue(cash >= 0, "Cash must be a positive number");
 
     this.cash = cash;
-    this.allBidsSum = 0;
-    this.allBidsCount = 0;
+    this.history.clear();
   }
 
   /**
@@ -46,8 +44,8 @@ public class AveragePlusOneBidder implements Bidder {
       return 0;
     }
 
-    double average = ((double) allBidsSum) / allBidsCount;
-    int nextValue = (int) (Math.round(average)) + 1;
+    double median = new Median().evaluate(history.stream().mapToDouble(d -> d).toArray());
+    int nextValue = (int) (Math.round(median)) + 1;
     return nextValue <= cash ? nextValue : 0;
   }
 
@@ -59,8 +57,8 @@ public class AveragePlusOneBidder implements Bidder {
     Assert.isTrue(own >= 0, "Own bid must be a positive number");
     Assert.isTrue(other >= 0, "Other bid must be a positive number");
 
-    this.cash -= own;
-    this.allBidsSum += (own + other);
-    this.allBidsCount += 2;
+    cash -= own;
+    history.add(own);
+    history.add(other);
   }
 }

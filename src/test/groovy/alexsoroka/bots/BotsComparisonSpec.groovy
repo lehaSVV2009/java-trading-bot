@@ -140,6 +140,30 @@ class BotsComparisonSpec extends Specification {
     1000000  | 1000000 | 100 // loose
   }
 
+  @Unroll
+  def 'median bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def medianBidder = new MedianPlusOneBidder()
+    def randomBidder = new RandomBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(medianBidder, randomBidder, quantity, cash, iterations)
+
+    then:
+    statistics[medianBidder].victories > statistics[randomBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
 
   //
   // PLUS ONE BOT COMPARISON
@@ -195,4 +219,28 @@ class BotsComparisonSpec extends Specification {
     1000000  | 1000000 | 100 // loose
   }
 
+  @Unroll
+  def 'median bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def medianBidder = new MedianPlusOneBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(medianBidder, plusOneBidder, quantity, cash, iterations)
+
+    then:
+    statistics[medianBidder].victories > statistics[plusOneBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // loose
+    10       | 1000    | 100 // loose
+    10       | 1000000 | 100 // loose
+    1000     | 10      | 100 // loose
+    1000     | 1000    | 100 // loose
+    1000     | 1000000 | 100 // loose
+    1000000  | 10      | 100 // loose
+    1000000  | 1000    | 100 // loose
+    1000000  | 1000000 | 100 // loose
+  }
 }
