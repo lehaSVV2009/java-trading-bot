@@ -1,7 +1,8 @@
 package alexsoroka.auction;
 
-import static alexsoroka.auction.WinFunctions.findBidResult;
+import static alexsoroka.bots.WinFunctions.findBidResult;
 
+import alexsoroka.bots.BidResult;
 import alexsoroka.bots.Bidder;
 import alexsoroka.util.Assert;
 import lombok.extern.slf4j.Slf4j;

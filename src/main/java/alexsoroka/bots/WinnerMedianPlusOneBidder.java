@@ -1,6 +1,5 @@
 package alexsoroka.bots;
 
-import alexsoroka.auction.WinFunctions;
 import alexsoroka.util.Assert;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.math3.stat.descriptive.rank.Median;

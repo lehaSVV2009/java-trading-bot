@@ -42,7 +42,7 @@ class WinnerPlusOneOrTwoBidderSpec extends Specification {
   }
 
   @Unroll
-  def 'placeBid should return bid=#bid when lastOwnBid=#lastOwnBid, lastOpponentBid=#lastOpponentBid and cash=#cash'() {
+  def 'placeBid should return bid=#bid1 or bid=#bid2 when lastOwnBid=#lastOwnBid, lastOpponentBid=#lastOpponentBid and cash=#cash'() {
     given:
     def bidder = new WinnerPlusOneOrTwoBidder()
     bidder.init(0, cash)

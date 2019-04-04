@@ -1,9 +1,9 @@
 package alexsoroka.bots;
 
+import static alexsoroka.bots.BidResult.DRAW;
+import static alexsoroka.bots.BidResult.PLAYER_1_WIN;
 import static java.util.stream.Collectors.toList;
 
-import alexsoroka.auction.BidResult;
-import alexsoroka.auction.WinFunctions;
 import alexsoroka.util.Assert;
 import alexsoroka.util.Pair;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
@@ -12,19 +12,25 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
 
 /**
- * Advanced awesome bidder.
+ * Complex bidder with combinations of algorithms.
  */
 public class AwesomeBidder implements Bidder {
 
   /**
-   * Recent 100 own <-> other bids
+   * Recent 10 own <-> other bids
    */
-  private final Queue<Pair<Integer, Integer>> history = new CircularFifoQueue<>(100);
+  private final CircularFifoQueue<Pair<Integer, Integer>> history = new CircularFifoQueue<>(10);
+
+  /**
+   * Randomizer instance
+   */
+  private final Random random = new Random();
 
   /**
    * Initial number of products to sell.
@@ -42,19 +48,19 @@ public class AwesomeBidder implements Bidder {
   private int opponentCash;
 
   /**
-   * Current number of products bought by bidder
+   * Current number of products bought by bidder.
    */
   private int ownPurchasesQuantity;
 
   /**
-   * Current number of products bought by opponent bidder
+   * Number of all turns at the beginning of the auction.
    */
-  private int opponentPurchasesQuantity;
+  private int allTurnsCount;
 
   /**
-   * Average price of single product from initial cash
+   * Arithmetic mean bid from initial cash.
    */
-  private int averageProductPrice;
+  private int initialArithmeticMeanBid;
 
   /**
    * @throws IllegalArgumentException if quantity or ownCash are negative numbers
@@ -62,12 +68,15 @@ public class AwesomeBidder implements Bidder {
   @Override
   public void init(int quantity, int cash) {
     Assert.isTrue(quantity >= 0, "Quantity must be a positive number");
+    Assert.isTrue(quantity % 2 == 0, "Quantity must be even");
     Assert.isTrue(cash >= 0, "Cash must be a positive number");
 
     this.initialQuantity = quantity;
     this.ownCash = cash;
     this.opponentCash = cash;
-    this.averageProductPrice = quantity == 0 ? 0 : (int) Math.round(((double) cash / quantity));
+    this.ownPurchasesQuantity = 0;
+    this.allTurnsCount = quantity / 2;
+    this.initialArithmeticMeanBid = allTurnsCount == 0 ? 0 : (int) Math.round(((double) cash / allTurnsCount));
     this.history.clear();
   }
 
@@ -76,49 +85,61 @@ public class AwesomeBidder implements Bidder {
    */
   @Override
   public int placeBid() {
-    // Skip calculations if there is no cash
-    if (ownCash == 0 || initialQuantity == 0) {
+    // Skip calculations if there is no cash or turns
+    if (ownCash == 0 || allTurnsCount == 0) {
       return 0;
     }
 
-    // Average price for 2 products is the 1st bid
-    if (history.size() == 0) {
-      int averageTwoProductsPrice = averageProductPrice * 2;
-      return averageTwoProductsPrice <= ownCash ? averageTwoProductsPrice : ownCash;
+    // Don't waste money if opponent's cash is 0
+    if (opponentCash == 0) {
+      return 1;
     }
 
-    // If owner quantity is close to win and own cash is bigger than opponent cash
-    // Place a bid that bigger than opponent cash
-    if (isOneStepToWin(initialQuantity, ownPurchasesQuantity) && ownCash > opponentCash) {
+    // Place maximum bid if there is only one round
+    if (initialQuantity == 2) {
+      return ownCash;
+    }
+
+    // First bid is always small to look at the opponent's strategy
+    if (history.size() == 0) {
+      int firstBid = random.nextBoolean() ? 1 : 2;
+      return randomIfGreaterThanCash(firstBid, ownCash);
+    }
+
+    // Check if it is possible to win by placing opponent's cash + 1 (when opponent's cash is too small)
+    long minimumTurnsToWin = calculateMinimumTurnsToWin(initialQuantity, ownPurchasesQuantity);
+    if (minimumTurnsToWin > 0 && ownCash >= (opponentCash + 1) * minimumTurnsToWin) {
       return opponentCash + 1;
     }
 
-    // According to analysis median bidder wins even random algorithm on small quantity
+    // According to statistics median + 2 bidder wins even random algorithm on small quantity
     if (initialQuantity <= 10) {
-      int median = calculateMedian(history) + 1;
-      return median <= ownCash ? median : 0;
+      int median = calculateMedian(history);
+      return randomIfGreaterThanCash(median + 2, ownCash);
     }
 
-    // TODO
-    // detect basic algorithm by 8 previous steps
-    // and place a winner bid for the algorithm
+    // TODO detect basic algorithm by 10 previous turns
+    // and place a winning bid for the algorithm
+    // (same number algorithm)
     // (plus x opponent)
     // (plus x winner)
     // (average plus x)
     // (average winner plus x)
     // (average opponent plus x)
 
-    // detect strategy type
-    // if aggressive (too many bids bigger than average price)
-    // TODO think about that
+    // Workaround to not allow bot to make too big bids
+    // If previous 2-4 rounds all the bids were bigger than average, place smaller one
+    if (isRecentBidsTooLarge(history, initialArithmeticMeanBid)) {
+      int smallBidLimit = initialArithmeticMeanBid / 2;
+      int smallBid = random.nextInt(smallBidLimit != 0 ? smallBidLimit : 1);
+      return randomIfGreaterThanCash(smallBid, ownCash);
+    }
 
-    // if patient (bids are less than average price)
-    // do aggressive
-
-    // if unknown
-    // try either random small-small-big-big-too-small approach, that close to average price
-    // or my own neural network
-    return 1;
+    // Use winner plus one or two algorithm
+    Pair<Integer, Integer> previousTurn = history.get(history.size() - 1);
+    int previousWinnerBid = WinFunctions.findWinnerBid(previousTurn.getLeft(), previousTurn.getRight());
+    int nextValue = previousWinnerBid + (random.nextBoolean() ? 1 : 2);
+    return randomIfGreaterThanCash(nextValue, ownCash);
   }
 
   /**
@@ -135,20 +156,10 @@ public class AwesomeBidder implements Bidder {
     history.add(Pair.of(own, other));
 
     BidResult bidResult = WinFunctions.findBidResult(own, other);
-    switch (bidResult) {
-      case PLAYER_1_WIN: {
-        ownPurchasesQuantity += 2;
-        break;
-      }
-      case PLAYER_2_WIN: {
-        opponentPurchasesQuantity += 2;
-        break;
-      }
-      default: {
-        ownPurchasesQuantity++;
-        opponentPurchasesQuantity++;
-        break;
-      }
+    if (PLAYER_1_WIN.equals(bidResult)) {
+      ownPurchasesQuantity += 2;
+    } else if (DRAW.equals(bidResult)) {
+      ownPurchasesQuantity++;
     }
   }
 
@@ -159,13 +170,24 @@ public class AwesomeBidder implements Bidder {
         .toArray();
 
     double median = new Median().evaluate(bids);
-    return (int) (Math.round(median)) + 1;
+    return (int) (Math.round(median));
   }
 
-  private boolean isOneStepToWin(int initialQuantity, int ownPurchasesQuantity) {
-    int halfOfInitialQuantity = initialQuantity / 2;
-    return ownPurchasesQuantity == halfOfInitialQuantity
-        || ownPurchasesQuantity - 1 == halfOfInitialQuantity;
+  private long calculateMinimumTurnsToWin(int initialQuantity, int ownPurchasesQuantity) {
+    int quantityToWin = 1 + (initialQuantity / 2) - ownPurchasesQuantity;
+    return Math.round((double) quantityToWin / 2);
+  }
+
+  private boolean isRecentBidsTooLarge(Queue<Pair<Integer, Integer>> history, int initialAverageTurnBid) {
+    return history.size() > 4
+        && history
+        .stream()
+        .skip(history.size() - (random.nextInt(3) + 2))
+        .allMatch(pair -> pair.getLeft() > initialAverageTurnBid);
+  }
+
+  private int randomIfGreaterThanCash(int bid, int cash) {
+    return bid <= cash ? bid : random.nextInt(cash);
   }
 
   // TODO add to BasicAlgorithmDetector

@@ -1,4 +1,4 @@
-package alexsoroka.auction;
+package alexsoroka.bots;
 
 public enum BidResult {
   PLAYER_1_WIN,

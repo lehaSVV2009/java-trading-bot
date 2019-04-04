@@ -61,6 +61,31 @@ class BotsComparisonSpec extends Specification {
     1000000  | 1000000 | 100
   }
 
+  @Unroll
+  def 'awesome bot should win zero bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def awesomeBidder = new AwesomeBidder()
+    def zeroOnlyBidder = new ZeroOnlyBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(awesomeBidder, zeroOnlyBidder, quantity, cash, iterations)
+
+    then:
+    statistics[awesomeBidder].victories > statistics[zeroOnlyBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
   //
   // RANDOM BOT COMPARISON
   //
@@ -76,6 +101,31 @@ class BotsComparisonSpec extends Specification {
 
     then:
     statistics[plusOneBidder].victories > statistics[randomBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // can loose
+    10       | 1000    | 100 // can loose
+    10       | 1000000 | 100 // can loose
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
+  @Unroll
+  def 'plusOneOrTwo bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def plusOneOrTwoBidder = new OpponentPlusTwoBidder()
+    def randomBidder = new RandomBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(plusOneOrTwoBidder, randomBidder, quantity, cash, iterations)
+
+    then:
+    statistics[plusOneOrTwoBidder].victories > statistics[randomBidder].victories
 
     where:
     quantity | cash    | iterations
@@ -190,6 +240,31 @@ class BotsComparisonSpec extends Specification {
     1000000  | 1000000 | 100
   }
 
+  @Unroll
+  def 'awesome bot should win random bid bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def awesomeBidder = new AwesomeBidder()
+    def randomBidder = new RandomBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(awesomeBidder, randomBidder, quantity, cash, iterations)
+
+    then:
+    statistics[awesomeBidder].victories > statistics[randomBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
   //
   // PLUS ONE BOT COMPARISON
   //
@@ -220,6 +295,31 @@ class BotsComparisonSpec extends Specification {
   }
 
   @Unroll
+  def 'plusOneOrTwo bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def plusOneOrTwoBidder = new OpponentPlusOneOrTwoBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(plusOneOrTwoBidder, plusOneBidder, quantity, cash, iterations)
+
+    then:
+    statistics[plusOneOrTwoBidder].victories > statistics[plusOneBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100 // loose
+  }
+
+  @Unroll
   def 'winnerPlusOneOrTwo bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
     given:
     def winnerPlusOneBidder = new WinnerPlusOneOrTwoBidder()
@@ -236,10 +336,10 @@ class BotsComparisonSpec extends Specification {
     10       | 10      | 100
     10       | 1000    | 100
     10       | 1000000 | 100
-    1000     | 10      | 100 // loose
+    1000     | 10      | 100
     1000     | 1000    | 100
-    1000     | 1000000 | 100 // loose
-    1000000  | 10      | 100 // loose
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
     1000000  | 1000    | 100
     1000000  | 1000000 | 100
   }
@@ -317,5 +417,109 @@ class BotsComparisonSpec extends Specification {
     1000000  | 10      | 100 // loose
     1000000  | 1000    | 100 // loose
     1000000  | 1000000 | 100 // loose
+  }
+
+  @Unroll
+  def 'awesome bot should win plusOne bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def awesomeBidder = new AwesomeBidder()
+    def plusOneBidder = new OpponentPlusOneBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(awesomeBidder, plusOneBidder, quantity, cash, iterations)
+
+    then:
+    statistics[awesomeBidder].victories > statistics[plusOneBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100
+    10       | 1000000 | 100
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
+  }
+
+  //
+  // WINNER PLUS ONE BOT COMPARISON
+  //
+
+  @Unroll
+  def 'plusOne bot should win winnerPlusOneOrTwo bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def plusOneBidder = new OpponentPlusOneBidder()
+    def winnerPlusOneOrTwoBidder = new WinnerPlusOneOrTwoBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(plusOneBidder, winnerPlusOneOrTwoBidder, quantity, cash, iterations)
+
+    then:
+    statistics[plusOneBidder].victories > statistics[winnerPlusOneOrTwoBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // loose
+    10       | 1000    | 100 // loose
+    10       | 1000000 | 100 // loose
+    1000     | 10      | 100 // loose
+    1000     | 1000    | 100 // loose
+    1000     | 1000000 | 100 // loose
+    1000000  | 10      | 100 // loose
+    1000000  | 1000    | 100 // loose
+    1000000  | 1000000 | 100 // loose
+  }
+
+  @Unroll
+  def 'plusOneOrTwo bot should win winnerPlusOneOrTwo bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def plusOneOrTwoBidder = new OpponentPlusOneOrTwoBidder()
+    def winnerPlusOneOrTwoBidder = new WinnerPlusOneOrTwoBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(plusOneOrTwoBidder, winnerPlusOneOrTwoBidder, quantity, cash, iterations)
+
+    then:
+    statistics[plusOneOrTwoBidder].victories > statistics[winnerPlusOneOrTwoBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100 // loose
+    10       | 1000    | 100 // loose
+    10       | 1000000 | 100 // loose
+    1000     | 10      | 100 // loose
+    1000     | 1000    | 100 // loose
+    1000     | 1000000 | 100 // loose
+    1000000  | 10      | 100 // loose
+    1000000  | 1000    | 100 // loose
+    1000000  | 1000000 | 100 // loose
+  }
+
+  @Unroll
+  def 'awesome bot should win winnerPlusOneOrTwo bot when quantity=#quantity, cash=#cash, iterations=#iterations'() {
+    given:
+    def awesomeBidder = new AwesomeBidder()
+    def winnerPlusOneOrTwoBidder = new WinnerPlusOneOrTwoBidder()
+
+    when:
+    def statistics = runTwoBiddersAuctions(awesomeBidder, winnerPlusOneOrTwoBidder, quantity, cash, iterations)
+
+    then:
+    statistics[awesomeBidder].victories > statistics[winnerPlusOneOrTwoBidder].victories
+
+    where:
+    quantity | cash    | iterations
+    10       | 10      | 100
+    10       | 1000    | 100 // loose
+    10       | 1000000 | 100 // loose
+    1000     | 10      | 100
+    1000     | 1000    | 100
+    1000     | 1000000 | 100
+    1000000  | 10      | 100
+    1000000  | 1000    | 100
+    1000000  | 1000000 | 100
   }
 }

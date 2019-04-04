@@ -5,19 +5,14 @@ import alexsoroka.util.Assert;
 import java.util.Random;
 
 /**
- * Bidder with bids that depend on previous winner's bid.
+ * Bidder with bids that depend on previous opponent's bid.
  */
-public class WinnerPlusOneOrTwoBidder implements Bidder {
+public class OpponentPlusOneOrTwoBidder implements Bidder {
 
   /**
    * Current value of bidder money. 0 by default.
    */
   private int cash;
-
-  /**
-   * Last own's bid. 0 by default.
-   */
-  private int lastOwnBid;
 
   /**
    * Last other's bid. 0 by default.
@@ -33,7 +28,6 @@ public class WinnerPlusOneOrTwoBidder implements Bidder {
     Assert.isTrue(cash >= 0, "Cash must be a positive number");
 
     this.cash = cash;
-    this.lastOwnBid = 0;
     this.lastOpponentBid = 0;
   }
 
@@ -42,8 +36,7 @@ public class WinnerPlusOneOrTwoBidder implements Bidder {
    */
   @Override
   public int placeBid() {
-    int previousWinnerBid = WinFunctions.findWinnerBid(lastOpponentBid, lastOwnBid);
-    int nextValue = previousWinnerBid + (new Random().nextBoolean() ? 1 : 2);
+    int nextValue = lastOpponentBid + (new Random().nextBoolean() ? 1 : 2);
     return nextValue <= cash ? nextValue : 0;
   }
 
@@ -56,7 +49,6 @@ public class WinnerPlusOneOrTwoBidder implements Bidder {
     Assert.isTrue(other >= 0, "Other bid must be a positive number");
 
     this.cash -= own;
-    this.lastOwnBid = own;
     this.lastOpponentBid = other;
   }
 }

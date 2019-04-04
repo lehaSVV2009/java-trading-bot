@@ -1,4 +1,4 @@
-package alexsoroka.auction;
+package alexsoroka.bots;
 
 public class WinFunctions {
   public static int compareBids(int own, int other) {
