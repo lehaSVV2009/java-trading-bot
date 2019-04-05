@@ -53,7 +53,7 @@ public class AwesomeBidder extends AbstractBidder {
   }
 
   /**
-   * @return the average bid from all the bids in the auction
+   * @return bid calculated by combination of winner plus one or two, max-max-min and history median algorithms
    */
   @Override
   public int placeBid() {
@@ -78,24 +78,20 @@ public class AwesomeBidder extends AbstractBidder {
       return opponentCash + 1;
     }
 
-    // First bid is always small to look at the opponent's strategy
+    // First bid is always small to not waste all money from the start (the algorithm is aggressive)
     if (history.size() == 0) {
       int firstBid = random.nextBoolean() ? 1 : 2;
       return randomIfGreaterThanCash(firstBid, ownCash);
     }
 
-    // According to statistics median + 2 bidder wins even random algorithm on small quantity
+    // According to statistics median plus two bidder wins even random algorithm on small quantity
     if (initialQuantity <= 10) {
       int median = calculateMedian(history);
       return randomIfGreaterThanCash(median + 2, ownCash);
     }
 
-    // TODO detect basic algorithm by 10 previous turns
-    // and place a winning bid for the algorithm
-    // (same number algorithm, plus x opponent, plus x winner, average plus x, average winner plus x, average opponent plus x)
-
-    // Workaround to not allow bot to make too big bids
-    // If previous 2-4 rounds all the bids were bigger than average, place smaller one
+    // Not allow bot to make too many large bids
+    // If previous 2-4 rounds all the bids were greater than initial mean, place smaller one
     if (isRecentBidsTooLarge(history, initialArithmeticMeanBid)) {
       int smallBidLimit = initialArithmeticMeanBid / 2;
       int smallBid = random.nextInt(smallBidLimit != 0 ? smallBidLimit : 1);
@@ -138,18 +134,18 @@ public class AwesomeBidder extends AbstractBidder {
    * @return minimum amount of turns to win
    */
   private long calculateMinimumTurnsToWin(int initialQuantity, int ownPurchasesQuantity) {
-    int quantityToWin = 1 + (initialQuantity / 2) - ownPurchasesQuantity;
-    return Math.round((double) quantityToWin / 2);
+    int minimumQuantityToWin = 1 + (initialQuantity / 2) - ownPurchasesQuantity;
+    return Math.round((double) minimumQuantityToWin / 2);
   }
 
   /**
-   * @return true if recent 2-4 own bids were bigger than initial arithmetic mean
+   * @return true if recent 2-4 own bids were greater than initial arithmetic mean
    */
-  private boolean isRecentBidsTooLarge(Queue<Pair<Integer, Integer>> history, int initialAverageTurnBid) {
+  private boolean isRecentBidsTooLarge(Queue<Pair<Integer, Integer>> history, int initialArithmeticMeanBid) {
     return history.size() > 4
         && history
         .stream()
         .skip(history.size() - (random.nextInt(3) + 2))
-        .allMatch(pair -> pair.getLeft() > initialAverageTurnBid);
+        .allMatch(pair -> pair.getLeft() > initialArithmeticMeanBid);
   }
 }
