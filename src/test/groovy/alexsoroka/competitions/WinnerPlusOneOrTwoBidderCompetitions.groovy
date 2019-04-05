@@ -63,7 +63,7 @@ class WinnerPlusOneOrTwoBidderCompetitions extends Specification {
     10       | 10      | 100        || WIN
     10       | 1000    | 100        || WIN
     10       | 1000000 | 100        || WIN
-    1000     | 10      | 100        || WIN
+    1000     | 10      | 100        || WIN_OR_LOOSE
     1000     | 1000    | 100        || WIN
     1000     | 1000000 | 100        || WIN
     1000000  | 10      | 100        || WIN
