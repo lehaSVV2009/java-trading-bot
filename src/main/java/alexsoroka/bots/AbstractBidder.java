@@ -75,14 +75,14 @@ public abstract class AbstractBidder implements Bidder {
   }
 
   /**
-   * @return if bid is less than or equal than bid, otherwise random value with cash limit
+   * @return if bid is less than or equal to bid, otherwise random value with cash limit
    */
   protected int randomIfGreaterThanCash(int bid, int cash) {
     return bid <= cash ? bid : new Random().nextInt(cash);
   }
 
   /**
-   * @return if bid is less than or equal than bid, otherwise 0
+   * @return if bid is less than or equal to bid, otherwise 0
    */
   protected int zeroIfGreaterThanCash(int bid, int cash) {
     return bid <= cash ? bid : 0;
