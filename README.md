@@ -11,13 +11,12 @@ There are many [competition tests](/src/test/groovy/alexsoroka/competitions), an
 
 In general, algorithm works as a previous winner bid plus one or two with periodical small bids to not waste all money.
 
-
-1. First of all, it checks if computation is needed (e.g. no need to run algorithm, if there is no cash).
+1. First of all, it checks if computation is needed (e.g. no need to run algorithm, if there is `no cash`).
 2. Then it checks some common scenarios when algorithm can win opponent without any random logic. (e.g. when there are only 2 quantities, or when there are 3 steps to win and own cash is 3 times greater than opponent's one).
-3. If the bid is first, it will be small bid like 1 or 2 cause in general algorithm is agressive and it usually places large bids.
-4. If the quantity of products is very small (less than 10) it will calculate median and will use median plus two bid cause after some observations I found that median algorithm is good in small quantities (it never lose to random).
-5. Then it checks previous 2, 3 or 4 rounds. If all of them were too big (greater than initial average mean) the algorithm will place small bid.
-6. And finally if all the checks are passed, the algorithm will place a previous round winner bid plus one or two.
+3. If the bid is `first`, it will be `small bid` like 1 or 2 cause in general algorithm is agressive and it usually places large bids.
+4. If the quantity of products is very small (`less than 10`) it will calculate `median` and will use median plus two bid cause after some observations I found that median algorithm is good in small quantities (it never lose to random).
+5. Then it checks previous 2, 3 or 4 rounds. If all of them were too big (greater than initial average mean) the algorithm will place `small bid`.
+6. And finally if all the checks are passed, the algorithm will place a `previous round winner bid plus one or two`.
 7. If any bid is greater than cash, random bid with cash limit will be placed.
 
 P.S. Of course, the algorithm looses sometimes in some cases.
