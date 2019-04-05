@@ -72,16 +72,16 @@ public class AwesomeBidder extends AbstractBidder {
       return ownCash;
     }
 
-    // First bid is always small to look at the opponent's strategy
-    if (history.size() == 0) {
-      int firstBid = random.nextBoolean() ? 1 : 2;
-      return randomIfGreaterThanCash(firstBid, ownCash);
-    }
-
     // Check if it is possible to win by placing opponent's cash + 1 (when opponent's cash is too small)
     long minimumTurnsToWin = calculateMinimumTurnsToWin(initialQuantity, ownPurchasesQuantity);
     if (minimumTurnsToWin > 0 && ownCash >= (opponentCash + 1) * minimumTurnsToWin) {
       return opponentCash + 1;
+    }
+
+    // First bid is always small to look at the opponent's strategy
+    if (history.size() == 0) {
+      int firstBid = random.nextBoolean() ? 1 : 2;
+      return randomIfGreaterThanCash(firstBid, ownCash);
     }
 
     // According to statistics median + 2 bidder wins even random algorithm on small quantity
