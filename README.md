@@ -28,6 +28,7 @@ P.S.2. Next best algorithm is [winner plus one or two bidder](/src/main/java/ale
 * Detect basic algorithms and use algorithms that win these basic algorithms. e.g. same number, plus x opponent, plus x winner, average plus x, average winner plus x, average opponent plus x.
 * Detect opponent strategy (aggressive, patient, random) and use algorithms that win this strategy in most cases.
 * Don't place a bid that 2 times greater than initial mean bid.
+* Place maximum bid on last turn when bidders have the same chances to win.
 * Try to use genetic algorithm.
 * Train neural network with own observations.
 

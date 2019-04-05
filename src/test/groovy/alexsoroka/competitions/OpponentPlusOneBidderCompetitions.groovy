@@ -40,7 +40,7 @@ class OpponentPlusOneBidderCompetitions extends Specification {
     10       | 1000    | 100        || LOOSE
     10       | 1000000 | 100        || LOOSE
     1000     | 10      | 100        || LOOSE
-    1000     | 1000    | 100        || LOOSE
+    1000     | 1000    | 100        || WIN_OR_LOOSE
     1000     | 1000000 | 100        || LOOSE
     1000000  | 10      | 100        || LOOSE
     1000000  | 1000    | 100        || LOOSE

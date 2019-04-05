@@ -1,3 +1,12 @@
 language: java
 jdk:
   - oraclejdk8
+script:
+  - "./gradlew clean build"
+deploy:
+  - provider: releases
+    api_key: $GITHUB_API_KEY
+    file: build/libs/java-trading-bot.jar
+    skip_cleanup: true
+    on:
+      tags: true

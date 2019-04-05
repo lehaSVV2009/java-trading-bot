@@ -4,7 +4,6 @@ plugins {
 }
 
 group = 'alexsoroka'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8' // JAVA 8
 
 // Add lombok annotation processor
@@ -19,6 +18,16 @@ test {
   testLogging {
     events "passed", "skipped", "failed"
     exceptionFormat "short"
+  }
+}
+
+// Generate fat jar for application on build
+jar {
+  manifest {
+    attributes 'Main-Class': 'alexsoroka.Main'
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
   }
 }
 
