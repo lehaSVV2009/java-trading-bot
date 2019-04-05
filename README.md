@@ -7,6 +7,8 @@ The algorithm is located [here](/src/main/java/alexsoroka/bots/AwesomeBidder.jav
 
 There are many [competition tests](/src/test/groovy/alexsoroka/competitions), and this algorithm shows best results in comparison with others. See all test results [here](https://travis-ci.org/lehaSVV2009/java-trading-bot)
 
+You can play with it by donwloading jar file from [releases](https://github.com/lehaSVV2009/java-trading-bot/releases) and running by `java -jar java-trading-bot.jar`.
+
 ### How it works?
 
 In general, algorithm works as a previous winner bid plus one or two with periodical small bids to not waste all money.
