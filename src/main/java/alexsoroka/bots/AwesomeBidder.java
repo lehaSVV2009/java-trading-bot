@@ -1,27 +1,23 @@
 package alexsoroka.bots;
 
-import static alexsoroka.bots.BidResult.DRAW;
-import static alexsoroka.bots.BidResult.PLAYER_1_WIN;
-import static alexsoroka.bots.WinFunctions.findWinnerBid;
-import static java.util.stream.Collectors.toList;
+import static alexsoroka.common.BidResult.DRAW;
+import static alexsoroka.common.BidResult.PLAYER_1_WIN;
 
-import alexsoroka.util.Assert;
+import alexsoroka.common.BidResult;
+import alexsoroka.common.WinFunctions;
 import alexsoroka.util.Pair;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Stream;
 
 
 /**
  * Complex bidder with combinations of algorithms.
  */
-public class AwesomeBidder implements Bidder {
+public class AwesomeBidder extends AbstractBidder {
 
   /**
    * Recent 10 own <-> other bids
@@ -32,21 +28,6 @@ public class AwesomeBidder implements Bidder {
    * Randomizer instance
    */
   private final Random random = new Random();
-
-  /**
-   * Initial number of products to sell.
-   */
-  private int initialQuantity;
-
-  /**
-   * Current value of bidder money. 0 by default.
-   */
-  private int ownCash;
-
-  /**
-   * Current value of opponent money. 0 by default.
-   */
-  private int opponentCash;
 
   /**
    * Current number of products bought by bidder.
@@ -63,18 +44,8 @@ public class AwesomeBidder implements Bidder {
    */
   private int initialArithmeticMeanBid;
 
-  /**
-   * @throws IllegalArgumentException if quantity or ownCash are negative numbers or if quantity is not even
-   */
   @Override
-  public void init(int quantity, int cash) {
-    Assert.isTrue(quantity >= 0, "Quantity must be a positive number");
-    Assert.isTrue(quantity % 2 == 0, "Quantity must be even");
-    Assert.isTrue(cash >= 0, "Cash must be a positive number");
-
-    this.initialQuantity = quantity;
-    this.ownCash = cash;
-    this.opponentCash = cash;
+  protected void afterInit(int quantity, int cash) {
     this.ownPurchasesQuantity = 0;
     this.allTurnsCount = quantity / 2;
     this.initialArithmeticMeanBid = allTurnsCount == 0 ? 0 : (int) Math.round(((double) cash / allTurnsCount));
@@ -121,12 +92,7 @@ public class AwesomeBidder implements Bidder {
 
     // TODO detect basic algorithm by 10 previous turns
     // and place a winning bid for the algorithm
-    // (same number algorithm)
-    // (plus x opponent)
-    // (plus x winner)
-    // (average plus x)
-    // (average winner plus x)
-    // (average opponent plus x)
+    // (same number algorithm, plus x opponent, plus x winner, average plus x, average winner plus x, average opponent plus x)
 
     // Workaround to not allow bot to make too big bids
     // If previous 2-4 rounds all the bids were bigger than average, place smaller one
@@ -143,17 +109,8 @@ public class AwesomeBidder implements Bidder {
     return randomIfGreaterThanCash(nextValue, ownCash);
   }
 
-  /**
-   * @throws IllegalArgumentException if own or other are negative numbers
-   */
   @Override
-  public void bids(int own, int other) {
-    Assert.isTrue(own >= 0, "Own bid must be a positive number");
-    Assert.isTrue(other >= 0, "Other bid must be a positive number");
-
-    ownCash -= own;
-    opponentCash -= other;
-
+  public void afterBids(int own, int other) {
     history.add(Pair.of(own, other));
 
     BidResult bidResult = WinFunctions.findBidResult(own, other);
@@ -164,6 +121,9 @@ public class AwesomeBidder implements Bidder {
     }
   }
 
+  /**
+   * @return median value from history of both (own and other)
+   */
   private int calculateMedian(Queue<Pair<Integer, Integer>> history) {
     double[] bids = history.stream()
         .flatMap(pair -> Stream.of(pair.getLeft(), pair.getRight()))
@@ -174,40 +134,22 @@ public class AwesomeBidder implements Bidder {
     return (int) (Math.round(median));
   }
 
+  /**
+   * @return minimum amount of turns to win
+   */
   private long calculateMinimumTurnsToWin(int initialQuantity, int ownPurchasesQuantity) {
     int quantityToWin = 1 + (initialQuantity / 2) - ownPurchasesQuantity;
     return Math.round((double) quantityToWin / 2);
   }
 
+  /**
+   * @return true if recent 2-4 own bids were bigger than initial arithmetic mean
+   */
   private boolean isRecentBidsTooLarge(Queue<Pair<Integer, Integer>> history, int initialAverageTurnBid) {
     return history.size() > 4
         && history
         .stream()
         .skip(history.size() - (random.nextInt(3) + 2))
         .allMatch(pair -> pair.getLeft() > initialAverageTurnBid);
-  }
-
-  private int randomIfGreaterThanCash(int bid, int cash) {
-    return bid <= cash ? bid : random.nextInt(cash);
-  }
-
-  // TODO add to BasicAlgorithmDetector
-  private boolean isOpponentPlusXAlgorithm(Queue<Pair<Integer, Integer>> history) {
-    int historyLength = history.size();
-
-    List<Integer> ownBids = history.stream().map(Pair::getLeft).collect(toList());
-    List<Integer> oppositeBids = history.stream().map(Pair::getRight).collect(toList());
-
-    Set<Integer> neighbourBidsDifferences = new HashSet<>();
-    for (int index = 1; index < oppositeBids.size(); ++index) {
-      if (neighbourBidsDifferences.size() > 2) {
-        return false;
-      }
-      Integer oppositeBid = oppositeBids.get(index);
-      Integer ownBid = ownBids.get(index - 1);
-      neighbourBidsDifferences.add(oppositeBid - ownBid);
-    }
-
-    return neighbourBidsDifferences.size() == 1;
   }
 }

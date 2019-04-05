@@ -4,11 +4,16 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class OpponentPlusOneBidderSpec extends Specification {
+  OpponentPlusOneBidder cut
+
+  def setup() {
+    cut = new OpponentPlusOneBidder()
+  }
 
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new OpponentPlusOneBidder().init(quantity, cash)
+    cut.init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,11 +28,10 @@ class OpponentPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new OpponentPlusOneBidder()
-    bidder.init(0, cash)
+    cut.init(0, cash)
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid
@@ -44,12 +48,11 @@ class OpponentPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when lastOpponentBid=#lastOpponentBid and cash=#cash'() {
     given:
-    def bidder = new OpponentPlusOneBidder()
-    bidder.init(0, cash)
-    bidder.bids(0, lastOpponentBid)
+    cut.init(0, cash)
+    cut.bids(0, lastOpponentBid)
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid
@@ -66,7 +69,7 @@ class OpponentPlusOneBidderSpec extends Specification {
   @Unroll
   def 'bids should throw #exception when (own=#own, other=#other)'() {
     when:
-    new RandomBidder().bids(own, other)
+    cut.bids(own, other)
 
     then:
     thrown(IllegalArgumentException.class)

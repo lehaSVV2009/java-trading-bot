@@ -2,6 +2,11 @@ package alexsoroka.bots;
 
 import alexsoroka.util.Assert;
 
+import java.util.Random;
+
+/**
+ * Bidder with default validations and initializations
+ */
 public abstract class AbstractBidder implements Bidder {
 
   /**
@@ -32,10 +37,18 @@ public abstract class AbstractBidder implements Bidder {
     this.ownCash = cash;
     this.opponentCash = cash;
 
-    initialize(quantity, cash);
+    afterInit(quantity, cash);
   }
 
-  public abstract void initialize(int quantity, int cash);
+  /**
+   * Additional init
+   *
+   * @param quantity the quantity
+   * @param cash     the cash limit
+   */
+  protected void afterInit(int quantity, int cash) {
+
+  }
 
   /**
    * @throws IllegalArgumentException if own or other are negative numbers
@@ -48,8 +61,31 @@ public abstract class AbstractBidder implements Bidder {
     ownCash -= own;
     opponentCash -= other;
 
-    storeBids(own, other);
+    afterBids(own, other);
   }
 
-  public abstract void storeBids(int own, int other);
+  /**
+   * Additional logic to show the bids of the two bidders.
+   *
+   * @param own   the bid of this bidder
+   * @param other the bid of the other bidder
+   */
+  protected void afterBids(int own, int other) {
+
+  }
+
+  /**
+   * @return if bid is less than or equal than bid, otherwise random value with cash limit
+   */
+  protected int randomIfGreaterThanCash(int bid, int cash) {
+    return bid <= cash ? bid : new Random().nextInt(cash);
+  }
+
+  /**
+   * @return if bid is less than or equal than bid, otherwise 0
+   */
+  protected int zeroIfGreaterThanCash(int bid, int cash) {
+    return bid <= cash ? bid : 0;
+  }
+
 }

@@ -5,10 +5,16 @@ import spock.lang.Unroll
 
 class RandomBidderSpec extends Specification {
 
+  RandomBidder cut
+
+  def setup() {
+    cut = new RandomBidder()
+  }
+
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new RandomBidder().init(quantity, cash)
+    cut.init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,11 +29,10 @@ class RandomBidderSpec extends Specification {
   @Unroll
   def 'placeBid should generate random value within cash=#cash'() {
     given:
-    def bidder = new RandomBidder()
-    bidder.init(0, cash)
+    cut.init(0, cash)
 
     when:
-    int bid = bidder.placeBid()
+    int bid = cut.placeBid()
 
     then:
     bid >= 0 && bid <= cash
@@ -45,7 +50,7 @@ class RandomBidderSpec extends Specification {
   @Unroll
   def 'bids should throw #exception when (own=#own, other=#other)'() {
     when:
-    new RandomBidder().bids(own, other)
+    cut.bids(own, other)
 
     then:
     thrown(IllegalArgumentException.class)

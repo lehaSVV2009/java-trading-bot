@@ -5,10 +5,16 @@ import spock.lang.Unroll
 
 class MedianPlusOneBidderSpec extends Specification {
 
+  MedianPlusOneBidder cut
+
+  def setup() {
+    cut = new MedianPlusOneBidder()
+  }
+
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new MedianPlusOneBidder().init(quantity, cash)
+    cut.init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,11 +29,10 @@ class MedianPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new MedianPlusOneBidder()
-    bidder.init(0, cash)
+    cut.init(0, cash)
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid
@@ -42,14 +47,13 @@ class MedianPlusOneBidderSpec extends Specification {
 
   def 'placeBid should clear history when bidder is used twice'() {
     given:
-    def bidder = new MedianPlusOneBidder()
-    bidder.init(2, 100)
-    bidder.bids(1, 2)
-    bidder.init(2, 100)
-    bidder.bids(3, 4)
+    cut.init(2, 100)
+    cut.bids(1, 2)
+    cut.init(2, 100)
+    cut.bids(3, 4)
 
     when:
-    def bid = bidder.placeBid()
+    def bid = cut.placeBid()
 
     then:
     bid == 5
@@ -58,14 +62,13 @@ class MedianPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bidsHistory=#bidsHistory and cash=#cash'() {
     given:
-    def bidder = new MedianPlusOneBidder()
-    bidder.init(bidsHistory.size() * 2, cash)
+    cut.init(bidsHistory.size() * 2, cash)
     bidsHistory.each {
-      bidder.bids(it[0], it[1])
+      cut.bids(it[0], it[1])
     }
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid

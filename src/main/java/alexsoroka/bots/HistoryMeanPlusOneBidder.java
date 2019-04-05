@@ -1,13 +1,10 @@
 package alexsoroka.bots;
 
-import alexsoroka.util.Assert;
-
 /**
  * Bidder with bids that bids average from the history value plus one.
  */
-public class HistoryMeanPlusOneBidder implements Bidder {
+public class HistoryMeanPlusOneBidder extends AbstractBidder {
 
-  // It's too slow for performance to store history in List<Integer>
   /**
    * Sum of all the bids (own and opposite)
    */
@@ -18,20 +15,8 @@ public class HistoryMeanPlusOneBidder implements Bidder {
    */
   private int allBidsCount;
 
-  /**
-   * Current value of bidder money. 0 by default.
-   */
-  private int cash;
-
-  /**
-   * @throws IllegalArgumentException if quantity or cash are negative numbers
-   */
   @Override
-  public void init(int quantity, int cash) {
-    Assert.isTrue(quantity >= 0, "Quantity must be a positive number");
-    Assert.isTrue(cash >= 0, "Cash must be a positive number");
-
-    this.cash = cash;
+  public void afterInit(int quantity, int cash) {
     this.allBidsSum = 0;
     this.allBidsCount = 0;
   }
@@ -42,24 +27,17 @@ public class HistoryMeanPlusOneBidder implements Bidder {
   @Override
   public int placeBid() {
     // Skip calculations if there is no cash
-    if (cash == 0) {
+    if (ownCash == 0) {
       return 0;
     }
 
     double average = ((double) allBidsSum) / allBidsCount;
     int nextValue = (int) (Math.round(average)) + 1;
-    return nextValue <= cash ? nextValue : 0;
+    return zeroIfGreaterThanCash(nextValue, ownCash);
   }
 
-  /**
-   * @throws IllegalArgumentException if own or other are negative numbers
-   */
   @Override
-  public void bids(int own, int other) {
-    Assert.isTrue(own >= 0, "Own bid must be a positive number");
-    Assert.isTrue(other >= 0, "Other bid must be a positive number");
-
-    this.cash -= own;
+  protected void afterBids(int own, int other) {
     this.allBidsSum += (own + other);
     this.allBidsCount += 2;
   }

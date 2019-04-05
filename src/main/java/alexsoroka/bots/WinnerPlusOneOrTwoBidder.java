@@ -1,18 +1,13 @@
 package alexsoroka.bots;
 
-import alexsoroka.util.Assert;
+import alexsoroka.common.WinFunctions;
 
 import java.util.Random;
 
 /**
  * Bidder with bids that depend on previous winner's bid.
  */
-public class WinnerPlusOneOrTwoBidder implements Bidder {
-
-  /**
-   * Current value of bidder money. 0 by default.
-   */
-  private int cash;
+public class WinnerPlusOneOrTwoBidder extends AbstractBidder {
 
   /**
    * Last own's bid. 0 by default.
@@ -24,15 +19,8 @@ public class WinnerPlusOneOrTwoBidder implements Bidder {
    */
   private int lastOpponentBid;
 
-  /**
-   * @throws IllegalArgumentException if quantity or cash are negative numbers
-   */
   @Override
-  public void init(int quantity, int cash) {
-    Assert.isTrue(quantity >= 0, "Quantity must be a positive number");
-    Assert.isTrue(cash >= 0, "Cash must be a positive number");
-
-    this.cash = cash;
+  protected void afterInit(int quantity, int cash) {
     this.lastOwnBid = 0;
     this.lastOpponentBid = 0;
   }
@@ -44,18 +32,11 @@ public class WinnerPlusOneOrTwoBidder implements Bidder {
   public int placeBid() {
     int previousWinnerBid = WinFunctions.findWinnerBid(lastOpponentBid, lastOwnBid);
     int nextValue = previousWinnerBid + (new Random().nextBoolean() ? 1 : 2);
-    return nextValue <= cash ? nextValue : 0;
+    return zeroIfGreaterThanCash(nextValue, ownCash);
   }
 
-  /**
-   * @throws IllegalArgumentException if own or other are negative numbers
-   */
   @Override
-  public void bids(int own, int other) {
-    Assert.isTrue(own >= 0, "Own bid must be a positive number");
-    Assert.isTrue(other >= 0, "Other bid must be a positive number");
-
-    this.cash -= own;
+  protected void afterBids(int own, int other) {
     this.lastOwnBid = own;
     this.lastOpponentBid = other;
   }

@@ -5,10 +5,16 @@ import spock.lang.Unroll
 
 class HistoryMeanPlusOneBidderSpec extends Specification {
 
+  HistoryMeanPlusOneBidder cut
+
+  def setup() {
+    cut = new HistoryMeanPlusOneBidder()
+  }
+
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new HistoryMeanPlusOneBidder().init(quantity, cash)
+    cut.init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,11 +29,10 @@ class HistoryMeanPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new HistoryMeanPlusOneBidder()
-    bidder.init(0, cash)
+    cut.init(0, cash)
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid
@@ -43,14 +48,13 @@ class HistoryMeanPlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bidsHistory=#bidsHistory and cash=#cash'() {
     given:
-    def bidder = new HistoryMeanPlusOneBidder()
-    bidder.init(0, cash)
+    cut.init(0, cash)
     bidsHistory.each {
-      bidder.bids(it[0], it[1])
+      cut.bids(it[0], it[1])
     }
 
     when:
-    int result = bidder.placeBid()
+    int result = cut.placeBid()
 
     then:
     result == bid
@@ -70,7 +74,7 @@ class HistoryMeanPlusOneBidderSpec extends Specification {
   @Unroll
   def 'bids should throw #exception when (own=#own, other=#other)'() {
     when:
-    new RandomBidder().bids(own, other)
+    cut.bids(own, other)
 
     then:
     thrown(IllegalArgumentException.class)
