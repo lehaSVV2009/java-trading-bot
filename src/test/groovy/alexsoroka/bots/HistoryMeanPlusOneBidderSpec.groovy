@@ -3,12 +3,12 @@ package alexsoroka.bots
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class AveragePlusOneBidderSpec extends Specification {
+class HistoryMeanPlusOneBidderSpec extends Specification {
 
   @Unroll
   def 'init should throw #exception when (quantity=#quantity, cash=#cash)'() {
     when:
-    new AveragePlusOneBidder().init(quantity, cash)
+    new HistoryMeanPlusOneBidder().init(quantity, cash)
 
     then:
     thrown(IllegalArgumentException.class)
@@ -23,7 +23,7 @@ class AveragePlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bid is first and cash=#cash'() {
     given:
-    def bidder = new AveragePlusOneBidder()
+    def bidder = new HistoryMeanPlusOneBidder()
     bidder.init(0, cash)
 
     when:
@@ -43,7 +43,7 @@ class AveragePlusOneBidderSpec extends Specification {
   @Unroll
   def 'placeBid should return bid=#bid when bidsHistory=#bidsHistory and cash=#cash'() {
     given:
-    def bidder = new AveragePlusOneBidder()
+    def bidder = new HistoryMeanPlusOneBidder()
     bidder.init(0, cash)
     bidsHistory.each {
       bidder.bids(it[0], it[1])

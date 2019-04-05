@@ -5,7 +5,7 @@ import alexsoroka.util.Assert;
 /**
  * Bidder with bids that bids average from the history value plus one.
  */
-public class AveragePlusOneBidder implements Bidder {
+public class HistoryMeanPlusOneBidder implements Bidder {
 
   // It's too slow for performance to store history in List<Integer>
   /**

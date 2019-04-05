@@ -2,6 +2,7 @@ package alexsoroka.bots;
 
 import static alexsoroka.bots.BidResult.DRAW;
 import static alexsoroka.bots.BidResult.PLAYER_1_WIN;
+import static alexsoroka.bots.WinFunctions.findWinnerBid;
 import static java.util.stream.Collectors.toList;
 
 import alexsoroka.util.Assert;
@@ -63,7 +64,7 @@ public class AwesomeBidder implements Bidder {
   private int initialArithmeticMeanBid;
 
   /**
-   * @throws IllegalArgumentException if quantity or ownCash are negative numbers
+   * @throws IllegalArgumentException if quantity or ownCash are negative numbers or if quantity is not even
    */
   @Override
   public void init(int quantity, int cash) {
