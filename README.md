@@ -5,7 +5,7 @@ Simple trading bot algorithms for first price sealed bid auction ([FPSBA](https:
 
 The algorithm is located [here](/src/main/java/alexsoroka/bots/AwesomeBidder.java).
 
-There are many [competition tests](/src/test/groovy/alexsoroka/competitions), and this algorithm shows best results in comparison with others.
+There are many [competition tests](/src/test/groovy/alexsoroka/competitions), and this algorithm shows best results in comparison with others. See all test results [here](https://travis-ci.org/lehaSVV2009/java-trading-bot)
 
 ### How it works?
 

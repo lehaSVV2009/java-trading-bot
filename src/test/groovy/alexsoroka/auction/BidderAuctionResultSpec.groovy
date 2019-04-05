@@ -6,7 +6,7 @@ import spock.lang.Unroll
 class BidderAuctionResultSpec extends Specification {
 
   @Unroll
-  def 'compare should return comparison=#comparison when firstResult=#firstResult and secondResult=#secondResult'() {
+  def 'compare should return #expected when firstResult=#firstResult and secondResult=#secondResult'() {
     when:
     int result = firstResult.compareTo(secondResult)
 

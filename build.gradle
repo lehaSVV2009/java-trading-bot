@@ -7,9 +7,18 @@ group = 'alexsoroka'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8' // JAVA 8
 
+// Add lombok annotation processor
 configurations {
   compileOnly {
     extendsFrom annotationProcessor
+  }
+}
+
+// Show passed, skipped and failed tests in output
+test {
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat "short"
   }
 }
 
